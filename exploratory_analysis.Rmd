@@ -1,0 +1,520 @@
+---
+title: "Past Use of Internet - Group12"
+author: "Gunjan Kumbhani, Pranjal Prakash, Anushka Shah, Zarin Tasnim, Vi Velumani"
+date: "2022-11-30"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The Internet's impact and importance in people's day to day lives
+continues to grow and thus, analyzing people's demographic attributes
+with respect to their internet use could give us insight on internet use
+behavior.
+
+Within this analysis, we aim to explore data from the pastUse.csv data
+file which contains data pertaining to 23,178 people's demographics,
+education levels, household types, and past internet use. We
+specifically focused on the relationships between a certain demographic
+and a certain internet use category: Demographics analyzed in this
+project: province, gender, age, labour force, education level Internet
+Use Category analyzed in this project: frequency of internet use, last
+time of internet use, and the reasons for non-internet use
+
+## Pre-processing / Cleaning
+
+This below code snippet shows the pre-processing of the data such that
+we changed the numerical values of rows and columns to non-numerical
+values. This helps us contextualize and understand the data and
+visualizations that follow.
+
+```{r preprocessingDataframes}
+
+#loading all the packages
+library(dplyr)
+library(tidyverse)
+library(epiDisplay)
+library(ggplot2)
+
+#Reading and storing data into two different dataframes (one raw, one for pre-processing)
+PU <- read.csv("pastUse.csv", header = T)
+df <- read.csv("pastUse.csv", header = T)
+
+#Getting rid of the ID column
+df <- df[ , -1]
+
+
+#pre-processing the df dataframe so that column names and row values are non-numerical
+
+df <- rename(df, isProvince = PROVINCE)  #change the name of the column
+#df <- mutate(df, totalEdu = G_CEDUC + G_CSTUD) 
+
+colRecode1 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 10, "Newfoundland and labrador", df[, i])
+    df[, i] <<- ifelse(df[, i] == 11, "Prince Edward Island", df[, i])
+    df[, i] <<- ifelse(df[, i] == 12, "Nova Scotia", df[, i])
+    df[, i] <<- ifelse(df[, i] == 13, "New Brunswick", df[, i])
+    df[, i] <<- ifelse(df[, i] == 24, "Quebec", df[, i])
+    df[, i] <<- ifelse(df[, i] == 35, "Ontario", df[, i])
+    df[, i] <<- ifelse(df[, i] == 46, "Manitoba", df[, i])
+    df[, i] <<- ifelse(df[, i] == 47, "Saskatchewan", df[, i])
+    df[, i] <<- ifelse(df[, i] == 48, "Alberta", df[, i])
+    df[, i] <<- ifelse(df[, i] == 59, "British Columbia", df[, i])
+  }
+}
+
+colRecode1 (1,1) 
+
+df <- rename(df, isRegion = REGION)  #change the name of the column
+#df <- mutate(df, totalEdu = G_CEDUC + G_CSTUD) 
+
+colRecode2 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "Atlantic Region", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "Quebec", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "Ontario", df[, i])
+    df[, i] <<- ifelse(df[, i] == 4, "Manitoba / Saskatchewan", df[, i])
+    df[, i] <<- ifelse(df[, i] == 5, "Alberta", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "British Columbia", df[, i])
+  }
+}
+
+colRecode2 (2,2) 
+
+df <- rename(df, isCommunity = G_URBRUR)  #change the name of the column
+#df <- mutate(df, totalEdu = G_CEDUC + G_CSTUD) 
+
+colRecode3 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 01, "Montreal", df[, i])
+    df[, i] <<- ifelse(df[, i] == 02, "Toronto", df[, i])
+    df[, i] <<- ifelse(df[, i] == 03, "Vancouver", df[, i])
+    df[, i] <<- ifelse(df[, i] == 04, "Other urbcan excluding Prince Edward Island", df[, i])
+    df[, i] <<- ifelse(df[, i] == 05, "Rural excluding Prince Edward Island", df[, i])
+    df[, i] <<- ifelse(df[, i] == 06, "Prince Edward Island", df[, i])
+  }
+}
+
+colRecode3 (3,3) 
+
+df <- rename(df, isAgeGroups = GCAGEGR6)  #change the name of the column
+#df <- mutate(df, totalEdu = G_CEDUC + G_CSTUD) 
+
+colRecode4 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 01, "16 to 24", df[, i])
+    df[, i] <<- ifelse(df[, i] == 02, "25 to 34", df[, i])
+    df[, i] <<- ifelse(df[, i] == 03, "35 to 44", df[, i])
+    df[, i] <<- ifelse(df[, i] == 04, "45 to 54", df[, i])
+    df[, i] <<- ifelse(df[, i] == 05, "55 to 64", df[, i])
+    df[, i] <<- ifelse(df[, i] == 06, "64 and older", df[, i])
+  }
+}
+
+colRecode4 (4,4) 
+
+df <- rename(df, isGender = CSEX)  #change the name of the column
+#df <- mutate(df, totalEdu = G_CEDUC + G_CSTUD) 
+
+colRecode5 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "Male", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "Female", df[, i])
+  }
+}
+
+colRecode5 (5,5) 
+
+df <- rename(df,  isRespondentHighestEducationLevel = G_CEDUC)  #change the name of the column
+
+colRecode6 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "High school or less", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "College or some post-secondary", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "University certificate or degree", df[, i])
+  }
+}
+
+colRecode6 (6,6) 
+
+df <- rename(df,  isStudentRespondent = G_CSTUD)  #change the name of the column
+
+colRecode7 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "YES", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "NO", df[, i])
+  }
+}
+
+colRecode7 (7,7) 
+
+df <- rename(df,  isHouseholdHighestEduc = G_HEDUC)  #change the name of the column
+
+df <- rename(df,  isStudentinHH = G_HSTUD)  #change the name of the column
+
+colRecode12 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "YES", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "NO", df[, i])
+  }
+}
+
+colRecode12 (12,12) 
+
+df <- rename(df,  isEVPersonalUse = EV_Q01)  #change the name of the column
+
+colRecode13 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "YES", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "NO", df[, i])
+  }
+}
+
+colRecode13 (13,13) 
+
+df <- rename(df,  isLabourForce = G_CLFSST)  #change the name of the column
+
+colRecode8 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "Employed", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "Unemployed", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "Not in the labour force", df[, i])
+  }
+}
+
+colRecode8 (8,8) 
+
+df <- rename(df,  isHHType = GFAMTYPE)  #change the name of the column
+
+colRecode9 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "Single family HH with unmarried children under 16", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "Single family HH without unmarried children under 16", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "One person HH", df[, i])
+    df[, i] <<- ifelse(df[, i] == 4, "Multi family HH", df[, i])
+  }
+}
+
+colRecode9 (9,9) 
+
+df <- rename(df,  isNoofpersoninHH = G_HHSIZE)  #change the name of the column
+
+colRecode11 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 4, "4 or more", df[, i])
+  }
+}
+
+colRecode11 (11,11) 
+
+df <- rename(df,  isInternetuseYears = EV_Q02)  #change the name of the column
+
+colRecode14 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "Less than a year", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "1 to 2 years", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "2 to 5 years", df[, i])
+    df[, i] <<- ifelse(df[, i] == 4, "4 or more years", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "Valid skip", df[, i])
+    df[, i] <<- ifelse(df[, i] == 7, "Dont know", df[, i])
+    df[, i] <<- ifelse(df[, i] == 8, "Refusal", df[, i])
+  }
+}
+
+colRecode14 (14,14) 
+
+df <- rename(df,  isPUPersonalUse = PU_Q01)  #change the name of the column
+
+colRecode15 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "YES", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "NO", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "Valid Skip", df[, i])
+  }
+}
+
+colRecode15 (15,15)
+
+df <- rename(df,  isPULastTimeUsed = PU_Q02)  #change the name of the column
+
+colRecode16 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "1 to 2 Years", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "2 to 5 years", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "5 or more years", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "Valid Skip", df[, i])
+    df[, i] <<- ifelse(df[, i] == 7, "Dont Know", df[, i])
+  }
+}
+
+colRecode16 (16,16)
+
+df <- rename(df,  isPUHowOften = PU_Q03)  #change the name of the column
+
+colRecode17 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "Atleast once a day", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "Atleast once a week", df[, i])
+    df[, i] <<- ifelse(df[, i] == 3, "Atleast once a month", df[, i])
+    df[, i] <<- ifelse(df[, i] == 4, "Less than once a month", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "Valid Skip", df[, i])
+    df[, i] <<- ifelse(df[, i] == 7, "Dont Know", df[, i])
+  }
+}
+
+colRecode17 (17,17)
+
+df <- rename(df,  isTooCostly = PU_Q06A)  #change the name of the column
+df <- rename(df,  isNoNeed = PU_Q06E)  #change the name of the column
+df <- rename(df,  isNoTime = PU_Q06J)  #change the name of the column
+df <- rename(df,  isNoComputerAccess = PU_Q06K)  #change the name of the column
+
+colRecode18 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "YES", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "NO", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "Valid Skip", df[, i])
+    df[, i] <<- ifelse(df[, i] == 7, "Dont Know", df[, i])
+  }
+}
+
+colRecode18 (18,21)
+
+df <- rename(df,  isOther = PU_G06)  #change the name of the column
+
+colRecode22 <- function(startCol, endCol) {
+  for (i in startCol:endCol) {
+    df[, i] <<- ifelse(df[, i] == 1, "YES", df[, i])
+    df[, i] <<- ifelse(df[, i] == 2, "NO", df[, i])
+    df[, i] <<- ifelse(df[, i] == 6, "Valid Skip", df[, i])
+    df[, i] <<- ifelse(df[, i] == 9, "Not Stated", df[, i])
+  }
+}
+
+colRecode22 (22,22)
+```
+
+## How Long Have People Been Using the Internet?
+
+To start off, getting an idea of the length of internet use among the
+data helps us prove or disprove the claim that the internet plays a
+major role in people's lives.
+
+Through this distribution chart, we can see that 13,461 people out of
+23,178 have been using the internet for 4 years or more. This means that
+more than half of the respondents (58%) have been using the internet for
+the longest amount of time, proving that the internet does play a major
+role in the majority of people's lives.
+
+```{r pressure}
+#Showing how long people have been using the internet
+tab1(df$isInternetuseYears, sort.group = "decreasing", cum.percent = TRUE, main = "Respondent Distribution of Years of Internet Use")
+
+```
+
+## Age and Gender Demographics for Province
+
+In order to help us analyze internet use between age, gender, and
+province, we must first take a look at the age and gender makeup of each
+province.
+
+From the "Age Group of Provinces" chart, we can that the most amount of
+people live in Ontario while the least live in Prince Edward Island.
+Moreover, we can see that people aged 45 years old and above makeup most
+of the population of each province. From the "Gender Count by Province"
+Chart, we can see that there are more females in each province than
+there are males.
+
+From the two charts combined, it is safe to say that for any given
+province, the likelihood of encountering a female who is 45 years old
+and above is more likely than encountering a male who is younger than 45
+years old. This gives us a base to correlate gender, age, and province
+based on internet use in the following sections.
+
+```{r}
+#Stacked bar chart showing age group of provinces
+ageProv <- ggplot(data = df, aes(x = isProvince, fill =isAgeGroups))
+ageProv <- ageProv + geom_bar()
+ageProv <- ageProv + theme_minimal()
+ageProv <- ageProv  + theme(axis.text.x = element_text(angle = 90,hjust = 0)) + labs(title="Age Group of Provinces")
+ageProv
+
+#Stacked bar chart showing gender count by province
+freqprov_gen <- as.data.frame(table(df$isProvince, df$isGender))
+freqprov_gen <- rename(freqprov_gen,  Province = Var1)
+freqprov_gen <- rename(freqprov_gen,  Gender = Var2)
+freqprov_gen <- rename(freqprov_gen,  Frequency_of_Respondents = Freq)
+
+genProv <- ggplot(freqprov_gen, aes(x=Province, y=Frequency_of_Respondents, fill=Gender, label=Frequency_of_Respondents))+geom_bar(stat="identity")+geom_text(size=3, position=position_stack(vjust=0.5))+scale_fill_manual(values = c("Pink", "Lightblue"))+labs(title="Gender Count by Province")+theme(axis.text.x = element_text(angle = 90,hjust =0 ))
+genProv
+```
+
+## Internet Use and Labour based on Province
+
+Employment type can also influence internet use, so the following jitter
+plots aim to investigate the correlation between them based on Province.
+
+The "Labour Force By Province" plot shows that most people in each
+province are employed. The "Internet Use By Province" plot shows that
+most people in each province do use the internet. From this, we can
+understand that people who are employed are more likely to use the
+internet than people who are not employed.
+
+```{r}
+#Jitter Plot showing the labour force per province
+laboProv <- ggplot(df, aes(y = isLabourForce, x = isProvince)) + geom_jitter() + theme(axis.text.x = element_text(angle = 90,hjust = 0)) + labs(title = "Labour Force By Province")
+laboProv
+
+#Jitter Plot showing internet use per province
+intProv <- ggplot(df, aes(y = isPUPersonalUse, x = isProvince)) + geom_jitter() + theme(axis.text.x = element_text(angle = 90,hjust = 0)) + labs(title = "Internet Use By Province")
+intProv
+```
+
+## Internet Use Behaviour Based on Gender
+
+Investigating the relationship between internet use behaviour and gender
+can give us insight as to how people are using the internet if they male
+or female.
+
+The "Frequency of Internet Use By Gender" chart shows that most people
+use the internet atleast once a week. The distributions between male and
+female are relatively uniform, although in the "atleast once a day"
+category, more females tend to use the internet atleast once a day than
+males.
+
+The "Last Time Internet Use by Gender" chart shows that most people have
+used the internet in the last 1-2 years, with the distribution of males
+and females being relatively uniform.
+
+From this, we can gather that gender does not play a major role in
+determining frequency and recency of internet use.
+
+```{r}
+#Stacked Bar chart for showing frequency of internet use by Gender
+trimmedHO <- filter(df, isPUHowOften!='Valid Skip' & isPUHowOften!='Dont Know')
+freqHO_gen <- as.data.frame(table(trimmedHO$isPUHowOften, trimmedHO$isGender))
+freqHO_gen <- rename(freqHO_gen,  Internet_Use = Var1)
+freqHO_gen <- rename(freqHO_gen,  Gender = Var2)
+freqHO_gen <- rename(freqHO_gen,  Frequency_of_Respondents = Freq)
+howoften_GEN <- ggplot(freqHO_gen, aes(x=Internet_Use, y=Frequency_of_Respondents, fill=Gender, label=Frequency_of_Respondents))+geom_bar(stat="identity")+geom_text(size=5, position=position_stack(vjust=0.5))+scale_fill_manual(values = c("Pink", "Lightblue"))+theme(panel.background = element_rect(fill = "#887DA7", color = "black"))+labs(title="Frequency of Internet Use By Gender")
+howoften_GEN
+
+#Stacked Bar chart for showing last time internet use by Gender
+trimmedLU <- filter(df, isPULastTimeUsed!='Valid Skip' & isPULastTimeUsed!='Dont Know')
+freqLU_gen <- as.data.frame(table(trimmedLU$isPULastTimeUsed, trimmedLU$isGender))
+freqLU_gen <- rename(freqLU_gen,  Last_Internet_Use = Var1)
+freqLU_gen <- rename(freqLU_gen,  Gender = Var2)
+freqLU_gen <- rename(freqLU_gen,  Frequency_of_Respondents = Freq)
+lastuse_GEN <- ggplot(freqLU_gen, aes(x=Last_Internet_Use, y=Frequency_of_Respondents, fill=Gender, label=Frequency_of_Respondents))+geom_bar(stat="identity")+geom_text(size=5, position=position_stack(vjust=0.5))+scale_fill_manual(values = c("Pink", "Lightblue"))+theme(panel.background = element_rect(fill = "#7BA66E", color = "black"))+labs(title="Last Time Internet Use By Gender")
+lastuse_GEN
+```
+
+## Reasons for Non-Internet Use based on Education
+
+The level of education may determine why a person might not use the
+internet. For example, in the "Too Costly?" Chart, we can see that the
+most educated people (University degree) were the least to not use the
+internet for expense purposes. From this, we can infer that this is due
+to them being more financially stable since they have the most
+education.
+
+Similarly, in the "No Need" chart, we can see that the least educated
+people (high-school or less) have the least need to use the internet,
+which checks out since they might not use the internet as much as more
+educated people might.
+
+```{r}
+#The following stacked bar charts show each reason for non-internet use based
+#on the respondent's highest education level
+
+#Too Costly
+trimmedcostly <- filter(df, isTooCostly!='Valid Skip' & isTooCostly!='Dont Know')
+freqcostly_highed <- as.data.frame(table(trimmedcostly$isTooCostly, trimmedcostly$isRespondentHighestEducationLevel))
+freqcostly_highed <- rename(freqcostly_highed,  Too_Costly = Var1)
+freqcostly_highed <- rename(freqcostly_highed,  Respondent_Highest_Education = Var2)
+freqcostly_highed <- rename(freqcostly_highed,  Frequency_of_Respondents = Freq)
+costly_highed <- ggplot(freqcostly_highed, aes(x=Respondent_Highest_Education, y=Frequency_of_Respondents, fill=Too_Costly, label = Frequency_of_Respondents)) + geom_bar(stat="identity") + geom_col() +
+  geom_text(size=5, position=position_stack(vjust=0.5))+
+  scale_x_discrete(guide = guide_axis(n.dodge=4))+
+  scale_fill_manual(values = c("coral1", "darkseagreen"))+
+  theme(panel.background = element_rect(fill = "#FCFBCC", color = "black"))+
+  labs(title="Reason: Too Costly?") 
+costly_highed
+
+
+#No Need
+trimmednoneed <- filter(df, isNoNeed!='Valid Skip' & isNoNeed!='Dont Know')
+freqneed_highed <- as.data.frame(table(trimmednoneed$isNoNeed, trimmednoneed$isRespondentHighestEducationLevel))
+freqneed_highed <- rename(freqneed_highed,  No_Need = Var1)
+freqneed_highed <- rename(freqneed_highed,  Respondent_Highest_Education = Var2)
+freqneed_highed <- rename(freqneed_highed,  Frequency_of_Respondents = Freq)
+need_highed <- ggplot(freqneed_highed, aes(x=Respondent_Highest_Education, y=Frequency_of_Respondents, fill=No_Need, label = Frequency_of_Respondents)) + geom_bar(stat="identity") + geom_col() +
+  geom_text(size=5, position=position_stack(vjust=0.5))+
+  scale_x_discrete(guide = guide_axis(n.dodge=4))+
+  scale_fill_manual(values = c("coral1", "darkseagreen"))+
+  theme(panel.background = element_rect(fill = "#FCFBCC", color = "black"))+
+  labs(title="Reason: No Need?") 
+need_highed
+
+
+#No Time
+trimmednotime <- filter(df, isNoTime!='Valid Skip' & isNoTime!='Dont Know')
+freqtime_highed <- as.data.frame(table(trimmednotime$isNoTime, trimmednotime$isRespondentHighestEducationLevel))
+freqtime_highed <- rename(freqtime_highed,  No_Time = Var1)
+freqtime_highed <- rename(freqtime_highed,  Respondent_Highest_Education = Var2)
+freqtime_highed <- rename(freqtime_highed,  Frequency_of_Respondents = Freq)
+time_highed <- ggplot(freqtime_highed, aes(x=Respondent_Highest_Education, y=Frequency_of_Respondents, fill=No_Time, label = Frequency_of_Respondents)) + geom_bar(stat="identity") + geom_col() +
+  geom_text(size=5, position=position_stack(vjust=0.5))+
+  scale_x_discrete(guide = guide_axis(n.dodge=4))+
+  scale_fill_manual(values = c("coral1", "darkseagreen"))+
+  theme(panel.background = element_rect(fill = "#FCFBCC", color = "black"))+
+  labs(title="Reason: No Time?") 
+time_highed
+
+#No Computer
+trimmednocomputer <- filter(df, isNoComputerAccess!='Valid Skip' & isNoComputerAccess!='Dont Know')
+freqcomp_highed <- as.data.frame(table(trimmednocomputer$isNoComputerAccess, trimmednocomputer$isRespondentHighestEducationLevel))
+freqcomp_highed <- rename(freqcomp_highed,  No_Computer = Var1)
+freqcomp_highed <- rename(freqcomp_highed,  Respondent_Highest_Education = Var2)
+freqcomp_highed <- rename(freqcomp_highed,  Frequency_of_Respondents = Freq)
+comp_highed <- ggplot(freqcomp_highed, aes(x=Respondent_Highest_Education, y=Frequency_of_Respondents, fill=No_Computer, label = Frequency_of_Respondents)) + geom_bar(stat="identity") + geom_col() +
+  geom_text(size=5, position=position_stack(vjust=0.5))+
+  scale_x_discrete(guide = guide_axis(n.dodge=4))+
+  scale_fill_manual(values = c("coral1", "darkseagreen"))+
+  theme(panel.background = element_rect(fill = "#FCFBCC", color = "black"))+
+  labs(title="Reason: No Computer?") 
+comp_highed
+
+```
+
+
+
+```{r}
+cm <- read.csv("pastUse.csv", header = T)
+View(cm)
+
+res <- cor(cm)
+round(res, 2)
+
+library("Hmisc")
+
+res2 <- rcorr(as.matrix(cm))
+res2
+
+# Extract the correlation coefficients
+res2$r
+# Extract p-values
+res2$p
+
+install.packages("corrplot")
+library(corrplot)
+corrplot(res, type = "upper", order = "hclust", 
+         tl.col = "black", tl.srt = 45)
+
+```
