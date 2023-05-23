@@ -13,7 +13,7 @@ The project aimed to answer three main questions:
 1. Download files and run the main.R file in RStudio. This contains the R code for pre-processing data and the exploratory analysis.
 2. The chiSquareTest.R and randomforest.R files show the respective predictive analysis methods for the project.
 3. The exploratory_analysis.RMD file contains both the R code found in the main.R file as well as the markdown code for knitting the it onto the project HTML (https://rpubs.com/Group12_BSMM8740_Fall22/962411)
-#### 4. In order to view the full project, go to https://rpubs.com/Group12_BSMM8740_Fall22, where you will find the decision tree, correlation matrix, and the exploratory analysis HTML of the project.
+#### In order to view the full project, go to https://rpubs.com/Group12_BSMM8740_Fall22, where you will find the decision tree, correlation matrix, and the exploratory analysis HTML of the project.
 
 
 ## Project Skill Outcomes
