@@ -4,8 +4,8 @@ This R project explores and analyzes the Internet use of people in Canada, based
 
 The project aimed to answer three main questions:
 - What does the spread of internet users look like between gender, province, age, and employment status? What relationships and correlations arise regarding the two? 
-- Can I predict if a person is a long time internet user or a new internet user based on their demographic infomation.
-- Can I predict how often a person uses the internet based on their demographic infomation.
+- Can I predict if a person is a long time internet user or a new internet user based on their demographic information.
+- Can I predict how often a person uses the internet based on their demographic information.
 
 
 ## Installation / Viewing
